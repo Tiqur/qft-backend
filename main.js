@@ -16,7 +16,7 @@ function updateOrCreate(jsonToUpdate, key, value) {
 }
 
 (async () => {
-  const browser = await puppeteer.launch({headless: false});
+  const browser = await puppeteer.launch({headless: true});
   const page = await browser.newPage();
   const pendingXHR = new PendingXHR(page)
   await page.goto('https://charts.bogged.finance/?token=0xEE40498EB660383722d7CC07b4bcE40d9E51A13F', { waitUntil: ['load', 'domcontentloaded'] });
@@ -39,7 +39,7 @@ function updateOrCreate(jsonToUpdate, key, value) {
         const html = (await (await elementsh4[i].getProperty('innerHTML')).jsonValue()).toString();
         const phtml = html.substring(0, html.length - 1);
         const data = (phtml.substring(phtml.lastIndexOf('>')+1, phtml.lastIndexOf('</'))).trim();
-        if (html.includes('>Price'))      updateOrCreate(jsonData, "Price", data);
+        if (html.includes('>Price'))      updateOrCreate(jsonData, "price", data);
         if (html.includes('>24h Change')) updateOrCreate(jsonData, "change", data);
         if (html.includes('>24h Volume')) updateOrCreate(jsonData, "volume", data);
         if (html.includes('>Liquidity'))  updateOrCreate(jsonData, "liquidity", data);
@@ -48,6 +48,7 @@ function updateOrCreate(jsonToUpdate, key, value) {
       stringData = JSON.stringify(jsonData);
 
       if (lastSent != stringData) {
+        console.log(stringData)
         ws.send(stringData);
         lastSent = stringData;
       }
