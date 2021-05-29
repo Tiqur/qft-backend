@@ -16,10 +16,18 @@ function updateOrCreate(jsonToUpdate, key, value) {
 }
 
 (async () => {
-  const browser = await puppeteer.launch({headless: true});
+  const browser = await puppeteer.launch({
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    headless: true});
   const page = await browser.newPage();
   const pendingXHR = new PendingXHR(page)
-  await page.goto('https://charts.bogged.finance/?token=0xEE40498EB660383722d7CC07b4bcE40d9E51A13F', { waitUntil: ['load', 'domcontentloaded'] });
+  console.log("Connecting to website..")
+  await page.goto('https://charts.bogged.finance/?token=0xEE40498EB660383722d7CC07b4bcE40d9E51A13F', { 
+    waitUntil: ['load', 'domcontentloaded'],
+    executablePath: '/usr/bin/chromium-browser',
+    ignoreDefaultArgs: ['--disable-extensions']
+  });
+
   await pendingXHR.waitForAllXhrFinished();
   const jsonData = {};
   let lastSent = "";
@@ -28,9 +36,17 @@ function updateOrCreate(jsonToUpdate, key, value) {
   const waitForInfo = await page.waitForSelector('[class="dark:text-white text-gray-800 text-sm md:text-lg"]');
   
   // Create websocket server
+  console.log("Creating webserver...");
   const server = new WebSocket.Server({host: '0.0.0.0', port: 3001 });
+  
+
+  console.log("Done!");
   server.on('connection', async (ws) => {
 
+    ws.on('message', function incoming(message) {
+      console.log("Client connected!")
+      ws.send(lastSent);
+    });
     // Get data
     setInterval(async () => {
       const elementsh4 = await page.$$('[class="flex flex-col"]');
@@ -48,7 +64,6 @@ function updateOrCreate(jsonToUpdate, key, value) {
       stringData = JSON.stringify(jsonData);
 
       if (lastSent != stringData) {
-        console.log(stringData)
         ws.send(stringData);
         lastSent = stringData;
       }
