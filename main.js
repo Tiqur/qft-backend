@@ -64,7 +64,6 @@ function updateOrCreate(jsonToUpdate, key, value) {
 
       if (lastSent != stringData) {
         ws.send(stringData);
-        console.log(stringData);
         lastSent = stringData;
       }
       
