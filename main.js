@@ -47,6 +47,7 @@ function updateOrCreate(jsonToUpdate, key, value) {
       console.log("Client connected!")
       ws.send(lastSent);
     });
+    console.log("Live Data:")
     // Get data
     setInterval(async () => {
       const elementsh4 = await page.$$('[class="flex flex-col"]');
@@ -65,6 +66,7 @@ function updateOrCreate(jsonToUpdate, key, value) {
 
       if (lastSent != stringData) {
         ws.send(stringData);
+        console.log(stringData);
         lastSent = stringData;
       }
       
