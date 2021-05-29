@@ -41,13 +41,11 @@ function updateOrCreate(jsonToUpdate, key, value) {
   
 
   console.log("Done!");
-  server.on('connection', async (ws) => {
+  server.on('connection', async (ws, req) => {
 
-    ws.on('message', function incoming(message) {
-      console.log("Client connected!")
-      ws.send(lastSent);
-    });
-    console.log("Live Data:")
+    console.log(`Client connected: ${req.socket.remoteAddress}`);
+    ws.send(lastSent);
+
     // Get data
     setInterval(async () => {
       const elementsh4 = await page.$$('[class="flex flex-col"]');
