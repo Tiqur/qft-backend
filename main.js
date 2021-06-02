@@ -17,7 +17,7 @@ function updateOrCreate(jsonToUpdate, key, value) {
 
 (async () => {
   const browser = await puppeteer.launch({
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--unlimited-storage', '--full-memory-crash-report', '--full-memory-crash-report'],
     headless: true});
   const page = await browser.newPage();
   const pendingXHR = new PendingXHR(page)
