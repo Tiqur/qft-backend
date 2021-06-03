@@ -2,6 +2,8 @@ const puppeteer = require('puppeteer-extra');
 const WebSocket = require('ws');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const { PendingXHR } = require('pending-xhr-puppeteer');
+const HttpsServer = require('https').createServer;
+const fs = require('fs');
 puppeteer.use(StealthPlugin());
 
 function delay(time) {
@@ -10,12 +12,20 @@ function delay(time) {
    });
 }
 
-
 function updateOrCreate(jsonToUpdate, key, value) {
   jsonToUpdate[key] = value;
 }
 
 (async () => {
+
+  httpsServer = HttpsServer({
+    cert: fs.readFileSync('./.cert/cert.pem', 'utf8'),
+    key: fs.readFileSync('./.cert/private.pem', 'utf8')
+  })
+
+
+
+
   const browser = await puppeteer.launch({
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--unlimited-storage', '--full-memory-crash-report', '--full-memory-crash-report'],
     headless: true});
